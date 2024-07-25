@@ -111,7 +111,15 @@ class JMAFeed::VXKO < JMAFeed::ReportEntry
             xml_node :property do
               text_node :type
               xml_node :precipitation_part do
-                xml_node_collection :precipitation, type: "JMAFeed::JMX::Precipitation"
+                xml_node_collection :precipitation, type: "JMAFeed::JMX::Precipitation" do
+                  def time_define_list
+                    parent.parent.parent.parent.parent.time_defines.time_define
+                  end
+
+                  def time_define
+                    time_define_list.find{|d| d.time_id == ref_id}
+                  end
+                end
               end
               xml_node :water_level_part do
                 xml_node_collection :water_level, type: "JMAFeed::JMX::WaterLevel"
@@ -129,24 +137,40 @@ class JMAFeed::VXKO < JMAFeed::ReportEntry
             text_node :code
             text_node :location
           end
+
+          def precipitation
+            kind&.property&.precipitation_part&.precipitation
+          end
+
+          def water_level
+            kind&.property&.water_level_part&.water_level
+          end
         end
       end
     end
 
-    # def info_district_forecast
-    #   meteorological_infos[0].meteorological_info[0]
-    # end
+    def info_precipitation
+      meteorological_infos.find{|i| i.type == "雨量情報"}
+    end
 
-    # def info_district_1st
-    #   meteorological_infos[1].meteorological_info[0]
-    # end
+    def info_water_level
+      meteorological_infos.find{|i| i.type == "水位・流量情報"}
+    end
 
-    # def info_district_aggregated
-    #   meteorological_infos[2].meteorological_info[0]
-    # end
+    def info_flood
+      meteorological_infos.find{|i| i.type == "氾濫水の予報"}
+    end
 
-    # def info_district_2nd
-    #   meteorological_infos[3].meteorological_info[0]
-    # end
+    def time_series_precipitation
+      info_precipitation.time_series_info.item.first
+    end
+
+    def time_series_water_level
+      info_water_level.time_series_info.item.first
+    end
+
+    def time_series_flood
+      info_flood.time_series_info.item.first
+    end
   end
 end

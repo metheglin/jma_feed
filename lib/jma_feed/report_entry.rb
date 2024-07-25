@@ -30,6 +30,11 @@ end
 
 require "jma_feed/report_entry/jmx/area"
 require "jma_feed/report_entry/jmx/significancy"
+require "jma_feed/report_entry/jmx/precipitation"
+require "jma_feed/report_entry/jmx/water_level"
+require "jma_feed/report_entry/jmx/discharge"
 require "jma_feed/report_entry/vprn50"
 require "jma_feed/report_entry/vpww54"
 require "jma_feed/report_entry/vxko"
+require "jma_feed/report_entry/vphw50"
+require "jma_feed/report_entry/vptaii"
