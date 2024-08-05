@@ -1,4 +1,4 @@
-# 気象警報・注意報（Ｈ２７）
+# 竜巻注意情報
 # https://xml.kishou.go.jp/tec_material.html
 # 電文毎の解説資料 > 解説資料セットzip > 竜巻注意情報_解説資料.pdf
 # 

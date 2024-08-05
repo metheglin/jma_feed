@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.7"
   s.add_dependency "rake", "~> 13.0"
   s.add_dependency "nokogiri"
-  s.add_dependency "jma_code", "~> 0.0.2"
-  s.add_dependency "giri", "~> 0.0.2"
+  s.add_dependency "jma_code", "~> 0.0.3"
+  s.add_dependency "giri", "~> 0.0.3"
 end
