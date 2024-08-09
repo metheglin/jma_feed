@@ -22,47 +22,38 @@ class JMAFeed::Result
   end
 
   def doc
-    @doc ||= Nokogiri::XML(body)
+    @doc ||= JMAFeed::ResultDoc.new(body)
   end
 
-  def namespace
-    {atom: doc.root.namespace.href}
-  end
+  # def namespace
+  #   {atom: doc.root.namespace.href}
+  # end
 
-  def text(name)
-    doc.xpath("/atom:feed/atom:#{name}", namespace).text
-  end
+  # def text(name)
+  #   doc.xpath("/atom:feed/atom:#{name}", namespace).text
+  # end
 
   def title
-    text('title')
+    doc.title
   end
 
   def subtitle
-    text('subtitle')
+    doc.subtitle
   end
 
   def id
-    text('id')
+    doc.id
   end
 
   def updated
-    DateTime.parse(text('updated'))
+    doc.updated
   end
 
   def related
-    text('link[@rel="related"]/@href')
+    doc.related
   end
 
   def entries
-    @entries ||= doc.xpath('/atom:feed/atom:entry', namespace).map do |entry|
-      JMAFeed::ResultEntry.new(
-        title: entry.xpath('atom:title', namespace).text,
-        link: entry.xpath('atom:link/@href', namespace).text,
-        id: entry.xpath('atom:id', namespace).text,
-        updated: entry.xpath('atom:updated', namespace).text,
-        author: entry.xpath('atom:author/atom:name', namespace).text,
-        content: entry.xpath('atom:content', namespace).text,
-      )
-    end
+    doc.entries
   end
 end

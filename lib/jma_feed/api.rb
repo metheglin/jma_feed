@@ -1,11 +1,20 @@
 require "net/http"
 
-class JMAFeed::Api
-  def initialize
+module JMAFeed::Api
+
+  def self.type(feed_type, **args)
+    feed_type = feed_type.to_sym
+    if feed_type == :regular
+      JMAFeed::Regular.new(**args)
+    elsif feed_type == :extra
+      JMAFeed::Extra.new(**args)
+    else
+      raise "feed_type=#{feed_type} not supported"
+    end
   end
 
-  def get_feed_regular(if_modified_since: nil, &block)
-    res = execute(:get, "https://www.data.jma.go.jp/developer/xml/feed/regular.xml", headers: {
+  def get(if_modified_since: nil, &block)
+    res = execute(:get, "https://www.data.jma.go.jp/developer/xml/feed/#{feed_type}.xml", headers: {
       "If-Modified-Since" => if_modified_since ? 
         if_modified_since.httpdate :
         nil
@@ -13,14 +22,23 @@ class JMAFeed::Api
     JMAFeed::Result.new(res)
   end
 
-  def get_feed_extra(if_modified_since: nil, &block)
-    res = execute(:get, "https://www.data.jma.go.jp/developer/xml/feed/extra.xml", headers: {
-      "If-Modified-Since" => if_modified_since ? 
-        if_modified_since.httpdate :
-        nil
-    }, &block)
-    JMAFeed::Result.new(res)
-  end
+  # def get_feed_regular(if_modified_since: nil, &block)
+  #   res = execute(:get, "https://www.data.jma.go.jp/developer/xml/feed/regular.xml", headers: {
+  #     "If-Modified-Since" => if_modified_since ? 
+  #       if_modified_since.httpdate :
+  #       nil
+  #   }, &block)
+  #   JMAFeed::Result.new(res)
+  # end
+
+  # def get_feed_extra(if_modified_since: nil, &block)
+  #   res = execute(:get, "https://www.data.jma.go.jp/developer/xml/feed/extra.xml", headers: {
+  #     "If-Modified-Since" => if_modified_since ? 
+  #       if_modified_since.httpdate :
+  #       nil
+  #   }, &block)
+  #   JMAFeed::Result.new(res)
+  # end
 
   def execute(verb, uri, query: nil, body: nil, headers: {})
     uri = uri.is_a?(URI::HTTP) ? uri : URI.parse(uri)
