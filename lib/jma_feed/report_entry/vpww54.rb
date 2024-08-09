@@ -27,14 +27,14 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
             text_node :note, collection: true
           end
 
-          def alert
-            @alert ||= JMAFeed::Alert.all.find{|a| a.code == code}
+          def weather_alert
+            @weather_alert ||= JMAFeed::WeatherAlert.all.find{|a| a.code == code}
           end
         end
         text_node :change_status
         xml_node :area, type: "JMAFeed::JMX::Area"
 
-        JMAFeed::Alert.clusters.each do |cluster,alerts|
+        JMAFeed::WeatherAlert.clusters.each do |cluster,alerts|
           define_method cluster do
             kind.find{|k| alerts.map(&:code).include?(k.code)}
           end

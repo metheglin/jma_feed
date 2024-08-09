@@ -1,4 +1,4 @@
-class JMAFeed::Alert < Struct.new(:code, :name, :risk_level, :cluster, keyword_init: true)
+class JMAFeed::WeatherAlert < Struct.new(:code, :name, :risk_level, :cluster, keyword_init: true)
   # 気象警報・注意（Ｈ２７）_解説資料.pdf > 別表1
   # https://www.jma.go.jp/jma/kishou/know/bosai/warning_kind.html
   LIST = {
@@ -161,12 +161,7 @@ class JMAFeed::Alert < Struct.new(:code, :name, :risk_level, :cluster, keyword_i
     },
   }
 
-  # def self.clusters
-  #   LIST.map{|k,v| v[:cluster]}.uniq
-  # end
-
   def self.clusters
-    # LIST.map{|k,v| v[:cluster]}.uniq
     all.group_by(&:cluster)
   end
 

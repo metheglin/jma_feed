@@ -1,3 +1,5 @@
+require "csv"
+
 class JMAFeed::Report < Struct.new(
   :name, :title, :kind, :category, :code_represented, :codes, keyword_init: true
 )
@@ -34,6 +36,10 @@ class JMAFeed::Report < Struct.new(
       end
     end
 
+    def get
+      @data ||= load
+    end
+
     def build_by_csv_row(row)
       codes = build_codes(row[:code])
       code_represented = build_code_represented(row[:code])
@@ -43,7 +49,7 @@ class JMAFeed::Report < Struct.new(
         kind: row[:kind].split('／'),
         category: row[:category],
         code_represented: code_represented,
-        code: codes,
+        codes: codes,
       )
     end
 

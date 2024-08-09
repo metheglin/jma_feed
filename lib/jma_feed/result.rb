@@ -13,6 +13,10 @@ class JMAFeed::Result
     http_result.body
   end
 
+  def modified?
+    http_result.kind_of?(Net::HTTPSuccess)
+  end
+
   def last_modified
     DateTime.parse(http_result["Last-Modified"])
   end
