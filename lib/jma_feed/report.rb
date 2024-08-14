@@ -95,4 +95,11 @@ class JMAFeed::Report < Struct.new(
   def has_kind?(k)
     Array(kind).include?(k)
   end
+
+  def report_entry_class
+    return nil unless code_represented
+    JMAFeed.const_get(code_represented)
+  rescue NameError => e
+    JMAFeed::ReportEntry
+  end
 end

@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.add_dependency "rake", "~> 13.0"
   s.add_dependency "nokogiri"
   s.add_dependency "jma_code", "~> 0.0.4"
-  s.add_dependency "giri", "~> 0.0.3"
+  s.add_dependency "giri", "~> 0.0.4"
 end

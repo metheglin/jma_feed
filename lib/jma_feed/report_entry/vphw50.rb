@@ -22,19 +22,19 @@ class JMAFeed::VPHW50 < JMAFeed::ReportEntry
       end
     end
 
-    def warning_district_report
+    def warning_area_type1
       warning.find{|w| w.type == "竜巻注意情報（発表細分）"}
     end
 
-    def warning_district_1st
+    def warning_area_type2
       warning.find{|w| w.type == "竜巻注意情報（一次細分区域等）"}
     end
 
-    def warning_district_aggregated
+    def warning_area_type3
       warning.find{|w| w.type == "竜巻注意情報（市町村等をまとめた地域等）"}
     end
 
-    def warning_district_2nd
+    def warning_area_type4
       warning.find{|w| w.type == "竜巻注意情報（市町村等）"}
     end
   end

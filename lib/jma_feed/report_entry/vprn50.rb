@@ -40,6 +40,7 @@ class JMAFeed::VPRN50 < JMAFeed::ReportEntry
 
   xml_node :body do
     xml_node_collection :meteorological_infos do
+      xml_attribute :type
       xml_node_collection :meteorological_info do
         date_time_node :date_time
         xml_node_collection :item do
@@ -82,19 +83,19 @@ class JMAFeed::VPRN50 < JMAFeed::ReportEntry
       end
     end
 
-    def info_district_forecast
+    def info_area_type1
       meteorological_infos[0].meteorological_info[0]
     end
 
-    def info_district_1st
+    def info_area_type2
       meteorological_infos[1].meteorological_info[0]
     end
 
-    def info_district_aggregated
+    def info_area_type3
       meteorological_infos[2].meteorological_info[0]
     end
 
-    def info_district_2nd
+    def info_area_type4
       meteorological_infos[3].meteorological_info[0]
     end
   end

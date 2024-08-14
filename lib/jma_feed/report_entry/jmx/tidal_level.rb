@@ -1,10 +1,9 @@
-# jmx_mete
-class JMAFeed::JMX::Significancy < Giri::BaseNode
+class JMAFeed::JMX::TidalLevel < Giri::TextNodeBigDecimal
   xml_attribute :type
+  xml_attribute :unit
   xml_attribute :ref_id, with_name: "refID"
-  text_node :name
-  text_node :code
-  text_node :condition
+  # xml_attribute :condition
+  xml_attribute :description
 
   def time_define
     (context.time_define_list || []).find{ref_id && ref_id == _1.time_id}

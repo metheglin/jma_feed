@@ -5,6 +5,10 @@ class JMAFeed::ReportEntry < Giri::BaseNode
   class << self
     def get(url)
       xml = Net::HTTP.get(URI.parse(url))
+      build(xml)
+    end
+
+    def build(xml)
       doc = Nokogiri::XML(xml)
       new(doc.root)
     end
@@ -33,6 +37,13 @@ require "jma_feed/report_entry/jmx/significancy"
 require "jma_feed/report_entry/jmx/precipitation"
 require "jma_feed/report_entry/jmx/water_level"
 require "jma_feed/report_entry/jmx/discharge"
+require "jma_feed/report_entry/jmx/wind_direction"
+require "jma_feed/report_entry/jmx/wind_speed"
+require "jma_feed/report_entry/jmx/wave_height"
+require "jma_feed/report_entry/jmx/visibility"
+require "jma_feed/report_entry/jmx/snow_fall_depth"
+require "jma_feed/report_entry/jmx/humidity"
+require "jma_feed/report_entry/jmx/tidal_level"
 require "jma_feed/report_entry/vprn50"
 require "jma_feed/report_entry/vpww54"
 require "jma_feed/report_entry/vxko"
