@@ -100,10 +100,10 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
 
             # EXAMPLE of data structure
             # {
-            #   "土砂災害危険度" => [...],
-            #   "浸水害危険度" => [...],
-            #   "1時間最大雨量" => [...],
-            #   "3時間最大雨量" => [...],
+            #   "土砂災害危険度" => {"全体" => [...]},
+            #   "浸水害危険度" => {"全体" => [...]},
+            #   "1時間最大雨量" => {"全体" => [...]},
+            #   "3時間最大雨量" => {"全体" => [...]},
             # }
             # or 
             # {
@@ -119,11 +119,26 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
                 metrics_bases = metrics_part&.map(&:base)
                 metrics_items = if metrics_bases && metrics_bases.length > 0
                   primary_base = metrics_bases.first
-                  if primary_base.local && primary_base.local.length > 0
-                    metrics_bases.map{[_1.local.area_name, _1.local.public_send(v[:name])]}.to_h
+                  metrics_bases_area_items = if primary_base.local && primary_base.local.length > 0
+                    metrics_bases.map{|b| 
+                      b.local.map{|l| [l.area_name, l.public_send(v[:name])]}.to_h
+                    }
                   else
-                    metrics_bases.first.public_send(v[:name])
+                    metrics_bases.map{|b|
+                      [["全体", b.public_send(v[:name])]].to_h
+                    }
                   end
+
+                  metrics_bases_area_items.find{|area_items| 
+                    local_area_name, area_metrics_items = area_items.first
+                    area_metrics_items.first.type == k
+                  }
+                  
+                  # if primary_base.local && primary_base.local.length > 0
+                  #   metrics_bases.map{[_1.local.area_name, _1.local.public_send(v[:name])]}.to_h
+                  # else
+                  #   [["全体", metrics_bases.first.public_send(v[:name])]].to_h
+                  # end
                 else
                   nil
                 end
@@ -133,7 +148,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
                 else
                   nil
                 end
-              end.to_h
+              end.compact.to_h
             end
           end
 
@@ -168,7 +183,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
   def detect_with_area(area, weather_alert_clusters: nil)
     weather_alert_clusters ||= JMAFeed::WeatherAlert.clusters.keys
     warning_item = detect_warning_item_with_area(area)
-    return AreaDetecter.new unless warning_item
+    return nil unless warning_item
 
     warning_alerts = weather_alert_clusters.map{|cluster|
       warning_item.public_send(cluster)
@@ -179,7 +194,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
       info_item.public_send(cluster)
     }.compact
 
-    AreaDetecter.new(warning_alerts: warning_alerts, info_alerts: info_alerts)
+    AreaAlert.new(entry: self, area: area, warning_alerts: warning_alerts, info_alerts: info_alerts)
   end
 
   def detect_warning_item_with_area(area)
@@ -200,6 +215,9 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
   end
 
   def detect_info_item_with_area(area)
+    # NOTE: 当該電文で特別警報・警報・注意報の全てが解除される場合、MeteorologicalInfos 部は省略される。 (気象警報・注意報（Ｈ２７）_解説資料.pdf > 3-3)
+    return nil unless body.meteorological_infos
+
     if area.is_a?(JMACode::AreaInformationCity)
       body.meteorological_infos.time_series_info.item.find{_1.area.code == area.code}
     else
@@ -207,6 +225,6 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
     end
   end
 
-  class AreaDetecter < Struct.new(:warning_alerts, :info_alerts, keyword_init: true)
+  class AreaAlert < Struct.new(:entry, :area, :warning_alerts, :info_alerts, keyword_init: true)
   end
 end

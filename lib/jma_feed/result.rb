@@ -56,4 +56,8 @@ class JMAFeed::Result
   def entries
     doc.entries
   end
+
+  def all_entries
+    doc.all_entries
+  end
 end

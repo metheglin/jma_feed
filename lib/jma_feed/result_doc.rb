@@ -34,8 +34,8 @@ class JMAFeed::ResultDoc
     text('link[@rel="related"]/@href')
   end
 
-  def entries
-    @entries ||= doc.xpath('/atom:feed/atom:entry', namespace).map do |entry|
+  def all_entries
+    @all_entries ||= doc.xpath('/atom:feed/atom:entry', namespace).map do |entry|
       JMAFeed::ResultEntry.new(
         title: entry.xpath('atom:title', namespace).text,
         link: entry.xpath('atom:link/@href', namespace).text,
@@ -45,5 +45,9 @@ class JMAFeed::ResultDoc
         content: entry.xpath('atom:content', namespace).text,
       )
     end
+  end
+
+  def entries
+    all_entries.uniq(&:identity)
   end
 end

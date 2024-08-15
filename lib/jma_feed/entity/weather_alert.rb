@@ -317,7 +317,7 @@ class JMAFeed::WeatherAlert < Struct.new(:code, :name, :risk_level, :cluster, ke
     storm_surge: METRICS[:tide_metrics],
     thunderstorm: METRICS[:thunder_metrics],
     snow_melting: METRICS[:snow_melting_metrics],
-    heavy_fog: METRICS[:fog_metrics],
+    dense_fog: METRICS[:fog_metrics],
     dry_air: METRICS[:dry_air_metrics],
     avalanche: METRICS[:avalanche_metrics],
     low_temperature: METRICS[:low_temperature_metrics],
@@ -343,6 +343,6 @@ class JMAFeed::WeatherAlert < Struct.new(:code, :name, :risk_level, :cluster, ke
   end
 
   def metrics
-    CLUSTER_METRICS[cluster.to_sym]
+    CLUSTER_METRICS[cluster.to_sym] || {}
   end
 end
