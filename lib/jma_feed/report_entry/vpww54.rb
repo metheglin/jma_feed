@@ -65,12 +65,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
         end
 
         xml_node :time_defines do
-          xml_node_collection :time_define do
-            xml_attribute :time_id, with_name: :lower_camelcase
-            date_time_node :date_time
-            duration_node :duration
-            text_node :name
-          end
+          xml_node_collection :time_define, type: "JMAFeed::JMX::TimeDefine"
         end
         xml_node_collection :item do
           xml_node_collection :kind do
@@ -121,24 +116,28 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
                   primary_base = metrics_bases.first
                   metrics_bases_area_items = if primary_base.local && primary_base.local.length > 0
                     metrics_bases.map{|b| 
-                      b.local.map{|l| [l.area_name, l.public_send(v[:name])]}.to_h
+                      b.local.map{|l|
+                        [
+                          l.area_name, 
+                          l.public_send(v[:name]).map(&:metrics_item)
+                        ]
+                      }.to_h
                     }
                   else
                     metrics_bases.map{|b|
-                      [["全体", b.public_send(v[:name])]].to_h
+                      [
+                        [
+                          "全体", 
+                          b.public_send(v[:name]).map(&:metrics_item)
+                        ]
+                      ].to_h
                     }
                   end
 
                   metrics_bases_area_items.find{|area_items| 
                     local_area_name, area_metrics_items = area_items.first
-                    area_metrics_items.first.type == k
+                    area_metrics_items.first.name == k
                   }
-                  
-                  # if primary_base.local && primary_base.local.length > 0
-                  #   metrics_bases.map{[_1.local.area_name, _1.local.public_send(v[:name])]}.to_h
-                  # else
-                  #   [["全体", metrics_bases.first.public_send(v[:name])]].to_h
-                  # end
                 else
                   nil
                 end

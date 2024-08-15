@@ -33,6 +33,7 @@ class JMAFeed::ReportEntry < Giri::BaseNode
 end
 
 require "jma_feed/report_entry/jmx/area"
+require "jma_feed/report_entry/jmx/time_define"
 require "jma_feed/report_entry/jmx/significancy"
 require "jma_feed/report_entry/jmx/precipitation"
 require "jma_feed/report_entry/jmx/water_level"

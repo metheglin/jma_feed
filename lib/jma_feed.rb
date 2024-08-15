@@ -15,6 +15,7 @@ require "jma_feed/api"
 require "jma_feed/api/extra"
 require "jma_feed/api/regular"
 require "jma_feed/entity/weather_alert"
+require "jma_feed/entity/weather_alert/metrics_item"
 require "jma_feed/entity/risk_level"
 
 require "jma_feed/report_entry"
