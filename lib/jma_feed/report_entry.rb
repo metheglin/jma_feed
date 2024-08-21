@@ -29,6 +29,9 @@ class JMAFeed::ReportEntry < Giri::BaseNode
     text_node :info_type
     text_node :info_kind
     text_node :info_kind_version
+    xml_node :headline do
+      text_node :text
+    end
   end
 end
 

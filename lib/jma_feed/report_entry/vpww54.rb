@@ -11,41 +11,43 @@
 # </MeteorologicalInfos>
 # 
 class JMAFeed::VPWW54 < JMAFeed::ReportEntry
+  class WarningItemKind < Giri::BaseNode
+    text_node :name
+    text_node :code
+    text_node :status
+    text_node :condition
+    xml_node :last_kind do
+      text_node :name
+      text_node :code
+    end
+    xml_node_collection :next_kinds do
+      xml_node :next_kind do
+        text_node :name
+        text_node :code
+        date_time_node :date_time do
+          xml_attribute :precision, type: :duration
+        end
+        text_node :sentence
+      end
+    end
+    xml_node :attention do
+      text_node :note, collection: true
+    end
+    xml_node :addition do
+      text_node :note, collection: true
+    end
+
+    def weather_alert
+      @weather_alert ||= JMAFeed::WeatherAlert.all.find{|a| a.code == code}
+    end
+  end
+
   xml_node :body do
     text_node :notice, collection: true
     xml_node_collection :warning do
       xml_attribute :type
       xml_node_collection :item do
-        xml_node_collection :kind do
-          text_node :name
-          text_node :code
-          text_node :status
-          text_node :condition
-          xml_node :last_kind do
-            text_node :name
-            text_node :code
-          end
-          xml_node_collection :next_kinds do
-            xml_node :next_kind do
-              text_node :name
-              text_node :code
-              date_time_node :date_time do
-                xml_attribute :precision, type: :duration
-              end
-              text_node :sentence
-            end
-          end
-          xml_node :attention do
-            text_node :note, collection: true
-          end
-          xml_node :addition do
-            text_node :note, collection: true
-          end
-
-          def weather_alert
-            @weather_alert ||= JMAFeed::WeatherAlert.all.find{|a| a.code == code}
-          end
-        end
+        xml_node_collection :kind, type: "JMAFeed::VPWW54::WarningItemKind"
         text_node :change_status
         xml_node :area, type: "JMAFeed::JMX::Area"
 
@@ -193,7 +195,15 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
       info_item.public_send(cluster)
     }.compact
 
-    AreaAlert.new(entry: self, area: area, warning_alerts: warning_alerts, info_alerts: info_alerts)
+    AreaAlert.new(
+      entry: self, 
+      area: area, 
+      weather_warnings: warning_alerts.map{|w|
+        WeatherWarning.new(w, info: info_alerts&.find{|i| i.code == w.code})
+      },
+      warning_alerts: warning_alerts, 
+      info_alerts: info_alerts
+    )
   end
 
   def detect_warning_item_with_area(area)
@@ -224,6 +234,35 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
     end
   end
 
-  class AreaAlert < Struct.new(:entry, :area, :warning_alerts, :info_alerts, keyword_init: true)
+  class AreaAlert < Struct.new(:entry, :area, :weather_warnings, :warning_alerts, :info_alerts, keyword_init: true)
+  end
+
+  class WeatherWarning < DelegateClass(WarningItemKind)
+    attr_reader :info
+    def initialize(warning, info:)
+      @warning = warning
+      @info = info
+      super(warning)
+    end
+
+    def cluster
+      weather_alert.cluster
+    end
+
+    def risk_level
+      weather_alert.risk_level
+    end
+
+    def attentions
+      attention&.note
+    end
+
+    def additions
+      addition&.note
+    end
+
+    def metrics
+      info&.weather_alert_metrics
+    end
   end
 end
