@@ -1,5 +1,5 @@
 class JMAFeed::Regular
-  include JMAFeed::Api
+  include JMAFeed::Atom
 
   def feed_type
     :regular

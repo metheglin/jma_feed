@@ -1,6 +1,6 @@
 require "net/http"
 
-module JMAFeed::Api
+module JMAFeed::Atom
 
   def self.type(feed_type, **args)
     feed_type = feed_type.to_sym
@@ -8,6 +8,10 @@ module JMAFeed::Api
       JMAFeed::Regular.new(**args)
     elsif feed_type == :extra
       JMAFeed::Extra.new(**args)
+    elsif feed_type == :eqvol
+      JMAFeed::Eqvol.new(**args)
+    elsif feed_type == :other
+      JMAFeed::Other.new(**args)
     else
       raise "feed_type=#{feed_type} not supported"
     end

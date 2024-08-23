@@ -1,5 +1,5 @@
 class JMAFeed::Extra
-  include JMAFeed::Api
+  include JMAFeed::Atom
   
   def feed_type
     :extra

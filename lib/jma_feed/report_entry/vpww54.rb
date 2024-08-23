@@ -200,9 +200,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
       area: area, 
       weather_warnings: warning_alerts.map{|w|
         WeatherWarning.new(w, info: info_alerts&.find{|i| i.code == w.code})
-      },
-      warning_alerts: warning_alerts, 
-      info_alerts: info_alerts
+      }
     )
   end
 
@@ -234,7 +232,7 @@ class JMAFeed::VPWW54 < JMAFeed::ReportEntry
     end
   end
 
-  class AreaAlert < Struct.new(:entry, :area, :weather_warnings, :warning_alerts, :info_alerts, keyword_init: true)
+  class AreaAlert < Struct.new(:entry, :area, :weather_warnings, keyword_init: true)
   end
 
   class WeatherWarning < DelegateClass(WarningItemKind)
