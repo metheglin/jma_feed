@@ -70,16 +70,21 @@ class JMAFeed::VXSE53 < JMAFeed::ReportEntry
     return nil unless pref
 
     earthquake = body.earthquake
+    comments = [
+      body.comments&.forecast_comment&.text,
+      body.comments&.var_comment&.text,
+      body.comments&.free_form_comment&.text,
+    ].compact
     if area.is_a?(JMACode::Prefecture)
-      AreaAlert.new(entry: self, area: area, intensity: pref, earthquake: earthquake)
+      AreaAlert.new(entry: self, area: area, intensity: pref, earthquake: earthquake, comments: comments)
     else
       local_area = detect_local_area_with_area(area, pref)
-      if area.is_a?(JMACode::AreaForecastLocalE)
-        AreaAlert.new(entry: self, area: area, intensity: local_area, earthquake: earthquake)
+      if local_area && area.is_a?(JMACode::AreaForecastLocalE)
+        AreaAlert.new(entry: self, area: area, intensity: local_area, earthquake: earthquake, comments: comments)
       else
         city = detect_city_with_area(area, local_area)
-        if area.is_a?(JMACode::AreaInformationCity)
-          AreaAlert.new(entry: self, area: area, intensity: city, earthquake: earthquake)
+        if city && area.is_a?(JMACode::AreaInformationCity)
+          AreaAlert.new(entry: self, area: area, intensity: city, earthquake: earthquake, comments: comments)
         end
       end
     end
@@ -125,6 +130,6 @@ class JMAFeed::VXSE53 < JMAFeed::ReportEntry
     local_area_node.city.find{|c| c.code == city_code}
   end
 
-  class AreaAlert < Struct.new(:entry, :area, :intensity, :earthquake, keyword_init: true)
+  class AreaAlert < Struct.new(:entry, :area, :intensity, :earthquake, :comments, keyword_init: true)
   end
 end

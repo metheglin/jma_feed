@@ -13,10 +13,10 @@ class JMAFeed::JMX::Earthquake < Giri::BaseNode
         text_node :description
         text_node :datum
       end
-      big_decimal_node :magnitude do
-        xml_attribute :type
-        xml_attribute :description
-      end
     end
+  end
+  big_decimal_node :magnitude do
+    xml_attribute :type
+    xml_attribute :description
   end
 end
